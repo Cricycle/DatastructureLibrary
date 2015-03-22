@@ -1,6 +1,5 @@
-# Do not check in bin folder
 /bin
-
-# Do not check in misc extras from TestNG
+/dist
+/docs
+/testbin
 /test-output
-/target

@@ -27,9 +27,8 @@ public class SimpleStack<T>
 	public void push(T t)
 	{
 		if (top == stack.length)
-			throw new IllegalStateException(
-					"Attempted to push too many elements into SimpleStack. Elem: "
-							+ t + " stack size: " + stack.length);
+			throw new IllegalStateException("Attempted to push too many elements into SimpleStack. Elem: " + t
+				+ " stack size: " + stack.length);
 
 		stack[top++] = t;
 	}
@@ -37,8 +36,7 @@ public class SimpleStack<T>
 	public T pop()
 	{
 		if (isEmpty())
-			throw new IllegalStateException(
-					"Attempted to pop from an empty SimpleStack.");
+			throw new IllegalStateException("Attempted to pop from an empty SimpleStack.");
 
 		@SuppressWarnings("unchecked")
 		T result = (T) stack[--top];

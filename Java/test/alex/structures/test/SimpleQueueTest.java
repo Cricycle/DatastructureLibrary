@@ -93,8 +93,6 @@ public class SimpleQueueTest
 
 		// bad enqueue should throw exception
 		queue.enqueue("word3");
-
-		assert false;
 	}
 
 	/**

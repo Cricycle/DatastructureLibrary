@@ -1,5 +1,6 @@
 package alex.structures.test;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.testng.Assert;
@@ -181,6 +182,70 @@ public class Point2DTest
 			Assert.assertEquals(result, expectedTurns[i], "i = " + i);
 		}
 
+	}
+
+	@Test
+	public void Point2DMagnitudeTest()
+	{
+		Point2D[] points = {
+			new Point2D(0, 0),
+			new Point2D(1, 1),
+			new Point2D(-1, -1),
+			new Point2D(6, 8),
+			new Point2D(15, 8) };
+
+		double[][] magnitudes = {
+			{ 0.0, 0.0 },
+			{ 1.414213562373095, 2.0 },
+			{ 1.414213562373095, 2.0 },
+			{ 10.0, 100.0 },
+			{ 17.0, 289.0 } };
+
+		Assert.assertEquals(points.length, magnitudes.length, "Input and Expected arrays are not same length.");
+
+		for (int i = 0; i < points.length; ++i)
+		{
+			double magnitude = points[i].magnitude();
+			double magnitude2 = points[i].magnitude2();
+
+			Assert.assertTrue(Math.abs(magnitude - magnitudes[i][0]) < Point2D.EPS,
+				String.format("i=%d,actual=%.9f,expected=%.9f", i, magnitude, magnitudes[i][0]));
+			Assert.assertTrue(Math.abs(magnitude2 - magnitudes[i][1]) < Point2D.EPS,
+				String.format("i=%d,actual=%.9f,expected=%.9f", i, magnitude2, magnitudes[i][1]));
+		}
+	}
+
+	@Test
+	public void Point2DQuadrantTest()
+	{
+		Point2D[] points = {
+			new Point2D(0, 0),
+			new Point2D(0.000000000001f, -0.00000000000001f),
+			new Point2D(1, 0),
+			new Point2D(1, 1),
+			new Point2D(0, 1),
+			new Point2D(-1, 1),
+			new Point2D(-1, 0),
+			new Point2D(-1, -1),
+			new Point2D(0, -1),
+			new Point2D(1, -1) };
+
+		int[] quadrants = { 1, 1, 1, 1, 2, 2, 3, 3, 4, 4 };
+
+		Assert.assertEquals(points.length, quadrants.length, "Input and Expected arrays are not the same length.");
+
+		for (int i = 0; i < points.length; ++i)
+		{
+			Assert.assertEquals(quadrants[i], points[i].quadrant(),
+				String.format("i=%d,actual=%d,expected=%d", i, points[i].quadrant(), quadrants[i]));
+		}
+	}
+
+	@Test
+	public void Point2DPolarSortTest1()
+	{
+		Point2D[] input = {};
+		Arrays.sort(null, Point2D.PolarAngleSort.Instance);
 	}
 
 	/**

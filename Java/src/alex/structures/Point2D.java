@@ -160,4 +160,9 @@ public class Point2D
 	{
 		return 0;
 	}
+
+	public String toString()
+	{
+		return String.format("{%.6f,%.6f}", x, y);
+	}
 }

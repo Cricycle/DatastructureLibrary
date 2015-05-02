@@ -1,7 +1,11 @@
 package alex.structures.test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Random;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -241,11 +245,143 @@ public class Point2DTest
 		}
 	}
 
+	/**
+	 * Tests that if all the elements are different directions with non-zero magnitude, the sorting is correct
+	 */
 	@Test
 	public void Point2DPolarSortTest1()
 	{
-		Point2D[] input = {};
-		Arrays.sort(null, Point2D.PolarAngleSort.Instance);
+		Point2D[] expectedSort = {
+			new Point2D(1, 0),
+			new Point2D(1, 1),
+			new Point2D(0, 1),
+			new Point2D(-1, 1),
+			new Point2D(-1, 0),
+			new Point2D(-1, -1),
+			new Point2D(0, -1),
+			new Point2D(1, -1) };
+
+		testPermutationSorting(expectedSort, Point2D.PolarAngleSort.Instance);
+	}
+
+	/**
+	 * Tests that if all the elements have the same direction, any magnitude, the sorting is correct,
+	 * and that the sorting can distinguish between values which are close
+	 */
+	@Test
+	public void Point2DPolarSortTest2()
+	{
+		Point2D[] expectedSort = {
+			new Point2D(0, 0),
+			new Point2D(1, 1),
+			new Point2D(2, 2),
+			new Point2D(2.49999999, 2.49999999),
+			new Point2D(2.5, 2.5),
+			new Point2D(2.50000001, 2.50000001),
+			new Point2D(3, 3) };
+
+		testPermutationSorting(expectedSort, Point2D.PolarAngleSort.Instance);
+	}
+
+	/**
+	 * Tests that sorting a large array happens in a reasonable amount of time.
+	 * At the time of writing this test, it runs in about 1.8s to sort 1 million points randomly distributed in
+	 * [-1,1] x [-1,1]
+	 * Sorting 1 million randomly generated integers took < .5s
+	 */
+	@Test(timeOut = 3000)
+	public void Point2DPolarSortTest3()
+	{
+		int arraySize = 1000000;
+		long seed = 174716263123L;
+		Random r = new Random(seed);
+		Point2D[] pointList = new Point2D[arraySize];
+		for (int i = 0; i < pointList.length; ++i)
+		{
+			double x = r.nextDouble() * 2.0 - 1.0;
+			double y = r.nextDouble() * 2.0 - 1.0;
+			pointList[i] = new Point2D(x, y);
+		}
+
+		Arrays.sort(pointList, Point2D.PolarAngleSort.Instance);
+		for (int i = 0; i < pointList.length - 1; ++i)
+		{
+			Assert.assertTrue(Point2D.PolarAngleSort.Instance.compare(pointList[i], pointList[i + 1]) <= 0,
+				"Something went wrong at index = " + i);
+		}
+	}
+
+	// Do not input an array of size more than 9
+	private <T> void testPermutationSorting(T[] expectedSort, Comparator<T> comparator)
+	{
+		Assert.assertTrue(expectedSort.length < 10, "Input array length of " + expectedSort.length + " is too large.");
+		int targetCount = 1;
+		for (int arraySize = 1; arraySize <= expectedSort.length; ++arraySize)
+		{
+			int iterationCount = 0;
+			targetCount *= arraySize;
+
+			ArrayList<T> expectedSubarray = new ArrayList<T>(arraySize);
+			for (int i = 0; i < arraySize; ++i)
+				expectedSubarray.add(expectedSort[i]);
+
+			int[] permutation = new int[arraySize];
+			for (int i = 0; i < permutation.length; ++i)
+				permutation[i] = i;
+			do
+			{
+				++iterationCount;
+				ArrayList<T> input = new ArrayList<T>(expectedSubarray.size());
+				for (int i = 0; i < expectedSubarray.size(); ++i)
+				{
+					input.add(expectedSubarray.get(permutation[i]));
+				}
+
+				Collections.sort(input, comparator);
+				Assert.assertEquals(input, expectedSubarray, "Permutation = " + Arrays.toString(permutation));
+			}
+			while (getNextPermutation(permutation));
+
+			Assert.assertEquals(iterationCount, targetCount);
+		}
+	}
+
+	/**
+	 * Made for use in testing sorting.
+	 * 
+	 * @param array
+	 * @return True if we rearranged array to the next permutation
+	 */
+	private boolean getNextPermutation(int[] array)
+	{
+		// step 1: Find largest index k such that a[k] < a[k+1]
+		int k = array.length - 2;
+		while (k >= 0 && array[k] >= array[k + 1])
+			--k;
+
+		// We are at the last permutation, lexicographically.
+		if (k < 0)
+			return false;
+
+		// step 2: Find the largest index j > k such that a[k] < a[j]
+		int j = array.length - 1;
+		while (j > k && array[k] >= array[j])
+			--j;
+
+		// step 3: Swap a[k], a[j]
+		int temp = array[k];
+		array[k] = array[j];
+		array[j] = temp;
+
+		// step 4: Reverse a[k+1...]
+		for (int left = k + 1, right = array.length - 1; left < right; ++left, --right)
+		{
+			temp = array[left];
+			array[left] = array[right];
+			array[right] = temp;
+		}
+
+		return true;
 	}
 
 	/**

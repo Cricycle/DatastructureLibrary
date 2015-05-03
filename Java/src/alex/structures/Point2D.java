@@ -119,11 +119,12 @@ public class Point2D
 			return 1;
 		else if (x <= 0 && y > 0)
 			return 2;
-		else if (y <= 0 && x < 0)
+		else if (x < 0) // y <= 0
 			return 3;
 		else
 			// (x >= 0 && y < 0)
 			return 4;
+
 	}
 
 	private Turn interpretCrossProduct(double crossProduct)

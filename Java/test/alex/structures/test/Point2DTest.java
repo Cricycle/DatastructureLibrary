@@ -311,6 +311,25 @@ public class Point2DTest
 		}
 	}
 
+	/**
+	 * Tests sorting when there are multiple instances of the same element
+	 */
+	@Test
+	public void Point2DPolarSortTest4()
+	{
+		Point2D[] expectedSort = {
+			new Point2D(1, 1),
+			new Point2D(1, 2),
+			new Point2D(1, 2),
+			new Point2D(-1, 2),
+			new Point2D(-1, 2),
+			new Point2D(-1, 1),
+			new Point2D(-1, -1),
+			new Point2D(1, -1) };
+
+		testPermutationSorting(expectedSort, Point2D.PolarAngleSort.Instance);
+	}
+
 	// Do not input an array of size more than 9
 	private <T> void testPermutationSorting(T[] expectedSort, Comparator<T> comparator)
 	{
